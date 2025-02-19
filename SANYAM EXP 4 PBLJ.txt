@@ -1,0 +1,331 @@
+Q1)Write a Java program to implement an ArrayList that stores employee details (ID, Name, and Salary). Allow users to add, update, remove, and search employees.
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Employee {
+    int id;
+    String name;
+    double salary;
+
+    public Employee(int id, String name, double salary) {
+        this.id = id;
+        this.name = name;
+        this.salary = salary;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id + ", Name: " + name + ", Salary: " + salary;
+    }
+}
+
+public class EmployeeManagement {
+    public static void main(String[] args) {
+        ArrayList<Employee> employees = new ArrayList<>();
+        Scanner scanner = new Scanner(System.in);
+
+        int choice;
+        do {
+            System.out.println("\nEmployee Management System");
+            System.out.println("1. Add Employee");
+            System.out.println("2. Update Employee");
+            System.out.println("3. Remove Employee");
+            System.out.println("4. Search Employee");
+            System.out.println("5. Display All Employees"); // Added display option
+            System.out.println("6. Exit");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    addEmployee(employees, scanner);
+                    break;
+                case 2:
+                    updateEmployee(employees, scanner);
+                    break;
+                case 3:
+                    removeEmployee(employees, scanner);
+                    break;
+                case 4:
+                    searchEmployee(employees, scanner);
+                    break;
+                case 5:
+                    displayAllEmployees(employees);
+                    break;
+                case 6:
+                    System.out.println("Exiting...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        } while (choice != 6);
+
+        scanner.close();
+    }
+
+
+    private static void displayAllEmployees(ArrayList<Employee> employees) {
+        if (employees.isEmpty()) {
+            System.out.println("No employees found.");
+        } else {
+            System.out.println("\n--- All Employees ---");
+            for (Employee emp : employees) {
+                System.out.println(emp);
+            }
+        }
+    }
+
+    private static void addEmployee(ArrayList<Employee> employees, Scanner scanner) {
+        System.out.print("Enter employee ID: ");
+        int id = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+        System.out.print("Enter employee name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter employee salary: ");
+        double salary = scanner.nextDouble();
+
+        employees.add(new Employee(id, name, salary));
+        System.out.println("Employee added successfully.");
+    }
+
+    private static void updateEmployee(ArrayList<Employee> employees, Scanner scanner) {
+        System.out.print("Enter ID of employee to update: ");
+        int id = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        for (Employee employee : employees) {
+            if (employee.id == id) {
+                System.out.print("Enter new name: ");
+                String name = scanner.nextLine();
+                System.out.print("Enter new salary: ");
+                double salary = scanner.nextDouble();
+
+                employee.name = name;
+                employee.salary = salary;
+                System.out.println("Employee updated successfully.");
+                return; // Employee found and updated, exit the method
+            }
+        }
+
+        System.out.println("Employee not found.");
+    }
+
+    private static void removeEmployee(ArrayList<Employee> employees, Scanner scanner) {
+        System.out.print("Enter ID of employee to remove: ");
+        int id = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        for (int i = 0; i < employees.size(); i++) {
+            if (employees.get(i).id == id) {
+                employees.remove(i);
+                System.out.println("Employee removed successfully.");
+                return; // Employee found and removed, exit the method
+            }
+        }
+
+        System.out.println("Employee not found.");
+    }
+
+    private static void searchEmployee(ArrayList<Employee> employees, Scanner scanner) {
+        System.out.print("Enter ID or Name of employee to search: ");
+        String searchTerm = scanner.nextLine();
+
+        boolean found = false;
+        for (Employee employee : employees) {
+            if (String.valueOf(employee.id).equals(searchTerm) || employee.name.equalsIgnoreCase(searchTerm)) {
+                System.out.println(employee);
+                found = true;
+            }
+        }
+
+        if (!found) {
+            System.out.println("Employee not found.");
+        }
+    }
+}
+
+
+
+Q2)Create a program to collect and store all the cards to assist the users in finding all the cards in a given symbol using Collection interface.
+
+
+import java.util.*;
+
+class Card {
+    String symbol;
+    String value; // e.g., "A", "2", "King", etc.
+
+    public Card(String symbol, String value) {
+        this.symbol = symbol;
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return value + " of " + symbol;
+    }
+
+    @Override
+    public boolean equals(Object obj) {  // Important for Set to work correctly
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Card card = (Card) obj;
+        return Objects.equals(symbol, card.symbol) && Objects.equals(value, card.value);
+    }
+
+    @Override
+    public int hashCode() { // Important for Set to work correctly
+        return Objects.hash(symbol, value);
+    }
+}
+
+public class CardCollection {
+
+    public static void main(String[] args) {
+        // Use a Set to store cards, preventing duplicates
+        Set<Card> allCards = new HashSet<>();
+
+        // Example: Add some cards (you would likely read these from a file or user input)
+        allCards.add(new Card("Hearts", "A"));
+        allCards.add(new Card("Diamonds", "10"));
+        allCards.add(new Card("Spades", "King"));
+        allCards.add(new Card("Clubs", "2"));
+        allCards.add(new Card("Hearts", "A")); // Duplicate - won't be added to the Set
+        allCards.add(new Card("Diamonds", "J"));
+        allCards.add(new Card("Spades", "Queen"));
+        allCards.add(new Card("Clubs", "7"));
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\nEnter a symbol to search for (or 'exit'):");
+            String searchSymbol = scanner.nextLine();
+
+            if (searchSymbol.equalsIgnoreCase("exit")) {
+                break;
+            }
+
+            List<Card> foundCards = findCardsBySymbol(allCards, searchSymbol);
+
+            if (foundCards.isEmpty()) {
+                System.out.println("No cards found for symbol: " + searchSymbol);
+            } else {
+                System.out.println("Cards found for symbol " + searchSymbol + ":");
+                for (Card card : foundCards) {
+                    System.out.println(card);
+                }
+            }
+        }
+        scanner.close();
+    }
+
+    public static List<Card> findCardsBySymbol(Set<Card> allCards, String symbol) {
+        List<Card> foundCards = new ArrayList<>();
+        for (Card card : allCards) {
+            if (card.symbol.equalsIgnoreCase(symbol)) {
+                foundCards.add(card);
+            }
+        }
+        return foundCards;
+    }
+}
+
+Q3)Develop a ticket booking system with synchronized threads to ensure no double booking of seats. Use thread priorities to simulate VIP bookings being processed first.
+
+import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
+
+class Seat {
+    int seatNumber;
+    boolean booked;
+
+    public Seat(int seatNumber) {
+        this.seatNumber = seatNumber;
+        this.booked = false;
+    }
+
+    @Override
+    public String toString() {
+        return "Seat " + seatNumber + (booked ? " (Booked)" : "");
+    }
+}
+
+class BookingSystem {
+    private List<Seat> seats;
+    private ReentrantLock lock; // Lock for thread safety
+
+    public BookingSystem(int numSeats) {
+        seats = new ArrayList<>();
+        for (int i = 1; i <= numSeats; i++) {
+            seats.add(new Seat(i));
+        }
+        lock = new ReentrantLock();
+    }
+
+    public boolean bookSeat(int seatNumber, boolean isVIP) {
+        try {
+            lock.lock(); // Acquire the lock
+
+            Seat seat = seats.get(seatNumber - 1); // Seat numbers are 1-based
+            if (!seat.booked) {
+                seat.booked = true;
+                System.out.println(Thread.currentThread().getName() + " booked " + seat);
+                return true;
+            } else {
+                System.out.println(Thread.currentThread().getName() + " could not book " + seat + " - already booked.");
+                return false;
+            }
+        } finally {
+            lock.unlock(); // Release the lock in all cases (even exceptions)
+        }
+    }
+
+    public void displaySeats() {
+        System.out.println("\n--- Seat Status ---");
+        for (Seat seat : seats) {
+            System.out.println(seat);
+        }
+    }
+}
+
+public class TicketBookingSystem {
+    public static void main(String[] args) {
+        BookingSystem bookingSystem = new BookingSystem(10); // 10 seats
+
+        // Create threads for bookings
+        Thread vipBooking1 = new Thread(() -> bookingSystem.bookSeat(3, true), "VIP Booking 1");
+        Thread regularBooking1 = new Thread(() -> bookingSystem.bookSeat(5, false), "Regular Booking 1");
+        Thread vipBooking2 = new Thread(() -> bookingSystem.bookSeat(3, true), "VIP Booking 2"); // Trying to double-book
+        Thread regularBooking2 = new Thread(() -> bookingSystem.bookSeat(1, false), "Regular Booking 2");
+        Thread vipBooking3 = new Thread(() -> bookingSystem.bookSeat(7, true), "VIP Booking 3");
+        Thread regularBooking3 = new Thread(() -> bookingSystem.bookSeat(5, false), "Regular Booking 3"); // Trying to double-book
+
+        // Set thread priorities (VIP has higher priority)
+        vipBooking1.setPriority(Thread.MAX_PRIORITY);
+        vipBooking2.setPriority(Thread.MAX_PRIORITY);
+        vipBooking3.setPriority(Thread.MAX_PRIORITY);
+
+        // Start the threads
+        vipBooking1.start();
+        regularBooking1.start();
+        vipBooking2.start();
+        regularBooking2.start();
+        vipBooking3.start();
+        regularBooking3.start();
+
+        try {
+            // Wait for all threads to finish
+            vipBooking1.join();
+            regularBooking1.join();
+            vipBooking2.join();
+            regularBooking2.join();
+            vipBooking3.join();
+            regularBooking3.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        bookingSystem.displaySeats(); // Show the final seat status
+    }
+}
